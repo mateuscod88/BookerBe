@@ -1,0 +1,35 @@
+﻿services:
+  booker.api:
+    image: booker.api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    
+    restart: always
+    environment:
+        - ASPNETCORE_ENVIRONMENT=DockerCompose
+        - ASPNETCORE_URLS=http://+:80
+    ports:
+        - '5099:80'
+    networks:
+        - booker-network
+  booker-mssql:
+      image: mcr.microsoft.com/mssql/server:2022-latest
+      restart: always
+      user: root
+      environment:
+        ACCEPT_EULA: 'y'
+        SA_PASSWORD: P@ssword1234
+      ports:
+        - 1435:1433
+      networks:
+        - booker-network
+      volumes:
+        - booker-mssql-volume:/var/opt/mssql
+networks:
+  booker-network:
+      driver: bridge
+
+volumes:
+  booker-mssql-volume:
+      driver: local
